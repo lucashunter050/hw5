@@ -51,6 +51,7 @@ std::string wordleHelper(
     // base case - we have a leaf of the recursive tree structure
     if (!unknowns)
     {
+        // push into a set and return that set
         return in;
     }
 

@@ -93,10 +93,7 @@ bool scheduleHelper(
 
             if (isValid(avail, dailyNeed, maxShifts, sched))
             {
-                bool status = false;
-                status = scheduleHelper(avail, dailyNeed, maxShifts, sched, currDay, col + 1);
-
-                if (status)
+                if (scheduleHelper(avail, dailyNeed, maxShifts, sched, currDay, col + 1))
                 {
                     return true;
                 }
@@ -158,8 +155,8 @@ bool isValid(const AvailabilityMatrix& avail, size_t dailyNeed, size_t maxShifts
                 }
                 else
                 {
-                    // insert the nurse with a count of 0
-                    nurseCounts.insert(std::make_pair(nurse1, 0));
+                    // insert the nurse with a count of 1
+                    nurseCounts.insert(std::make_pair(nurse1, 1));
                 }
             }
         }
