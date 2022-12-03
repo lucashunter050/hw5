@@ -20,12 +20,18 @@ static const Worker_T INVALID_ID = (unsigned int)-1;
 
 // Add prototypes for any helper functions here
 bool scheduleHelper(
-    AvailabilityMatrix& avail, 
+    const AvailabilityMatrix& avail, 
     size_t dailyNeed,
     size_t maxShifts,
     DailySchedule& sched,
     int row,
     int col);
+
+bool isValid(
+    const AvailabilityMatrix& avail, 
+    size_t dailyNeed, 
+    size_t maxShifts, 
+    DailySchedule& sched);
 
 // Add your implementation of schedule() and other helper functions here
 
@@ -41,14 +47,17 @@ bool schedule(
     }
     sched.clear();
     // Add your code below
+    sched.resize(avail.size());
+    for (vector<Worker_T>& day: sched)
+    {
+        day.resize(dailyNeed, INVALID_ID);
+    }
 
-
-
-
+    return scheduleHelper(avail, dailyNeed, maxShifts, sched, 0, 0);
 }
 
 bool scheduleHelper(
-    AvailabilityMatrix& avail, 
+    const AvailabilityMatrix& avail, 
     size_t dailyNeed,
     size_t maxShifts,
     DailySchedule& sched,
@@ -96,7 +105,6 @@ bool scheduleHelper(
             {
                 sched[currDay][col] = INVALID_ID;
             }
-            
         }
     }
     
@@ -104,27 +112,55 @@ bool scheduleHelper(
     
 }
 
-bool isValid(AvailabilityMatrix& avail, size_t dailyNeed, size_t maxShifts, DailySchedule& sched)
+bool isValid(const AvailabilityMatrix& avail, size_t dailyNeed, size_t maxShifts, DailySchedule& sched)
 {
-    // make sure the nurses aren't overbooked
+    // make sure the nurses aren't working on the same day
+
+    for (size_t i = 0; i < sched.size(); ++i)
+    {
+        std::set<Worker_T> distinctDayNurses;
+        for (size_t j = 0; j < sched[i].size(); ++j)
+        {
+            if (sched[i][j] != INVALID_ID)
+            {
+                Worker_T nurse1 = static_cast<Worker_T>(sched[i][j]);
+                std::set<Worker_T, unsigned>::iterator it = distinctDayNurses.find(nurse1);
+                if (it != distinctDayNurses.end())
+                {
+                    return false;
+                    // the nurse is in the set for that day, so its an invalid arrangement
+                }
+                else
+                {
+                    // insert the nurse to the set
+                    distinctDayNurses.insert(nurse1);
+                }
+            }
+        }
+    }
+
+    // make sure the nurses aren't over the maxShifts
 
     std::map<Worker_T, unsigned> nurseCounts;
 
     for (size_t i = 0; i < sched.size(); ++i)
     {
-        for (size_t j = 0; j < sched[i].size(); ++i)
+        for (size_t j = 0; j < sched[i].size(); ++j)
         {
-            Worker_T nurse1 = static_cast<Worker_T>(sched[i][j]);
-            std::map<Worker_T, unsigned>::iterator it = nurseCounts.find(nurse1);
-            if (it != nurseCounts.end())
+            if (sched[i][j] != INVALID_ID)
             {
-                it->second++; 
-                // increment the count of that nurse's shifts
-            }
-            else
-            {
-                // insert the nurse with a count of 0
-                nurseCounts.insert(std::make_pair(nurse1, 0));
+                Worker_T nurse1 = static_cast<Worker_T>(sched[i][j]);
+                std::map<Worker_T, unsigned>::iterator it = nurseCounts.find(nurse1);
+                if (it != nurseCounts.end())
+                {
+                    it->second++; 
+                    // increment the count of that nurse's shifts
+                }
+                else
+                {
+                    // insert the nurse with a count of 0
+                    nurseCounts.insert(std::make_pair(nurse1, 0));
+                }
             }
         }
     }
