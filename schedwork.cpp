@@ -24,8 +24,8 @@ bool scheduleHelper(
     size_t dailyNeed,
     size_t maxShifts,
     DailySchedule& sched,
-    int row,
-    int col);
+    size_t row,
+    size_t col);
 
 bool isValid(
     const AvailabilityMatrix& avail, 
@@ -61,14 +61,13 @@ bool scheduleHelper(
     size_t dailyNeed,
     size_t maxShifts,
     DailySchedule& sched,
-    int currDay,
-    int col
+    size_t currDay,
+    size_t col
 )
 {
     size_t nDays = avail.size();
-    size_t kWorkers = avail.at(0).size();
     const unsigned CANWORK = 1;
-    const unsigned CANNOTWORK = 0;
+
     // we have finished the matrix
     if (currDay == nDays - 1 && col == dailyNeed)
     {
@@ -129,7 +128,7 @@ bool isValid(const AvailabilityMatrix& avail, size_t dailyNeed, size_t maxShifts
                 }
                 else
                 {
-                    // insert the nurse to the set
+                    // insert the nurse to the daily set
                     distinctDayNurses.insert(nurse1);
                 }
             }
