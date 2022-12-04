@@ -86,6 +86,7 @@ void wordleHelper(
         {
             in.at(pos) = potential;
             wordleHelper(in, floating, unknowns - 1, numFloatings - 1, validWords, dict);
+            in.at(pos) = '-';
         }
     }
     else // generate those without the restrictions 
@@ -94,6 +95,7 @@ void wordleHelper(
         {
             in.at(pos) = static_cast<char>(i);
             wordleHelper(in, floating, unknowns - 1, numFloatings, validWords, dict);
+            in.at(pos) = '-';
         }
     }
 }
